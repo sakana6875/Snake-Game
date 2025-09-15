@@ -65,23 +65,23 @@ public class Lao8 : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.W))
+            if (Input.GetKeyDown(KeyCode.W) && direction != Vector3.down)
             {
                 Debug.Log("W");
                 direction = Vector3.up;
             }
 
-            if (Input.GetKeyDown(KeyCode.A))
+            if (Input.GetKeyDown(KeyCode.A) && direction != Vector3.right)
             {
                 Debug.Log("A");
                 direction = Vector3.left;
             }
-            if (Input.GetKeyDown(KeyCode.S))
+            if (Input.GetKeyDown(KeyCode.S) && direction != Vector3.up)
             {
                 Debug.Log("S");
                 direction = Vector3.down;
             }
-            if (Input.GetKeyDown(KeyCode.D))
+            if (Input.GetKeyDown(KeyCode.D) && direction != Vector3.left)
             {
                 Debug.Log("D");
                 direction = Vector3.right;
@@ -91,6 +91,9 @@ public class Lao8 : MonoBehaviour
     
             private void FixedUpdate()
             {
+                if (!isStarted)
+                    return;
+            
                 moveTimer += Time.fixedDeltaTime;
                 if (moveTimer >= moveInterval)
                 {
