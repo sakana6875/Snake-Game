@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor.Build.Reporting;
+using UnityEditor.Experimental.GraphView;
+
 #endif
 using UnityEngine;
 
@@ -29,75 +31,109 @@ public class Lao8 : MonoBehaviour
         positions.Add(transform.position);
     }
 
+    private bool isStarted = false;
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.W))
+        if (!isStarted)
         {
-            Debug.Log("W");
-            direction = Vector3.up;
+            //只要玩家按下任意方向键就开始游戏
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                Debug.Log("W");
+                direction = Vector3.up;
+                isStarted = true;
+            }
         }
         if (Input.GetKeyDown(KeyCode.A))
         {
             Debug.Log("A");
             direction = Vector3.left;
+            isStarted = true;
         }
         if (Input.GetKeyDown(KeyCode.S))
         {
             Debug.Log("S");
             direction = Vector3.down;
+            isStarted = true;
         }
         if (Input.GetKeyDown(KeyCode.D))
         {
             Debug.Log("D");
             direction = Vector3.right;
+            isStarted = true;
         }
-    }
-
-    private void FixedUpdate()
-    {
-        moveTimer += Time.fixedDeltaTime;
-        if (moveTimer >= moveInterval)
+        else
         {
-            moveTimer = 0f;
-
-            // 记录蛇头当前位置
-            positions.Add(transform.position);
-
-            // 移动蛇头
-            transform.position += direction;
-
-            // 移动身体段
-            for (int i = 1; i < bodies.Count; i++)
+            if (Input.GetKeyDown(KeyCode.W))
             {
-                int posIndex = positions.Count - 1 - i * step;
-                if (posIndex >= 0)
-                {
-                    bodies[i].position = positions[posIndex];
-                }
-                else
-                {
-                    bodies[i].position = positions[0];
-                }
+                Debug.Log("W");
+                direction = Vector3.up;
             }
 
-            // 控制队列长度
-            int maxLength = bodies.Count * step + step;
-            if (positions.Count > maxLength)
+            if (Input.GetKeyDown(KeyCode.A))
             {
-                positions.RemoveRange(0, positions.Count - maxLength);
+                Debug.Log("A");
+                direction = Vector3.left;
             }
-
-            // 添加新身体段
-            if (pendingAddBody)
+            if (Input.GetKeyDown(KeyCode.S))
             {
-                Vector3 initPos = positions.Count > bodies.Count * step
-                    ? positions[positions.Count - bodies.Count * step]
-                    : positions[0];
-                bodies.Add(Instantiate(bodyPrefab, initPos, Quaternion.identity));
-                pendingAddBody = false;
+                Debug.Log("S");
+                direction = Vector3.down;
+            }
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                Debug.Log("D");
+                direction = Vector3.right;
             }
         }
     }
+    
+            private void FixedUpdate()
+            {
+                moveTimer += Time.fixedDeltaTime;
+                if (moveTimer >= moveInterval)
+                {
+                    moveTimer = 0f;
+
+                    // 记录蛇头当前位置
+                    positions.Add(transform.position);
+
+                    // 移动蛇头
+                    transform.position += direction;
+
+                    // 移动身体段
+                    for (int i = 1; i < bodies.Count; i++)
+                    {
+                        int posIndex = positions.Count - 1 - i * step;
+                        if (posIndex >= 0)
+                        {
+                            bodies[i].position = positions[posIndex];
+                        }
+                        else
+                        {
+                            bodies[i].position = positions[0];
+                        }
+                    }
+
+                    // 控制队列长度
+                    int maxLength = bodies.Count * step + step;
+                    if (positions.Count > maxLength)
+                    {
+                        positions.RemoveRange(0, positions.Count - maxLength);
+                    }
+
+                    // 添加新身体段
+                    if (pendingAddBody)
+                    {
+                        Vector3 initPos = positions.Count > bodies.Count * step
+                            ? positions[positions.Count - bodies.Count * step]
+                            : positions[0];
+                        bodies.Add(Instantiate(bodyPrefab, initPos, Quaternion.identity));
+                        pendingAddBody = false;
+                    }
+                }
+            }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
